@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.MainActivity">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#bbbbbb"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+             <TextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="标题"
+                 android:layout_centerVertical="true"
+                 android:layout_alignParentLeft="true"
+                 android:id="@+id/actionbar_title"
+                 android:textSize="18sp"/>
+
+            <ImageButton
+                android:id="@+id/actionbar_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:background="@mipmap/ic_setting" />
+
+            <ImageView
+                android:id="@+id/actionbar_separate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/actionbar_setting"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:src="@mipmap/ic_separate" />
+
+            <ImageButton
+                android:id="@+id/actionbar_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/actionbar_separate"
+                android:background="@mipmap/ic_preview" />
+
+            <ImageButton
+                android:id="@+id/actionbar_event"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/actionbar_preview"
+                android:background="@mipmap/ic_event_press" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/viewPage"
+        android:layout_below="@+id/toolbar"
+        />
+
+</RelativeLayout>

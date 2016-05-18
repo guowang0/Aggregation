@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:id="@+id/weiBo_photo"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/weiBo_photo"
+        android:text="username"
+        android:layout_marginTop="5dp"
+        android:id="@+id/weiBo_name"
+        android:textSize="15sp"
+        android:layout_marginLeft="5dp"
+        android:textColor="#5c5c5c"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/weiBo_content"
+        android:layout_toRightOf="@+id/weiBo_photo"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/weiBo_name"
+        android:layout_marginTop="7dp"
+        android:textSize="14sp"
+        android:text="content"
+        android:textColor="#777777" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/weiBo_time"
+        android:layout_toRightOf="@+id/weiBo_photo"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/weiBo_content"
+        android:layout_marginTop="7dp"
+        android:textSize="12sp"
+        android:text="time"
+        android:textColor="#b3b3b3" />
+
+    
+</RelativeLayout>
