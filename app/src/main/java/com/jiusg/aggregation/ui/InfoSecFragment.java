@@ -10,30 +10,26 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.jiusg.aggregation.Adapter.HotAdapter;
-import com.jiusg.aggregation.Adapter.WeiBoAdapter;
+import com.jiusg.aggregation.adapter.InfoSecAdapter;
 import com.jiusg.aggregation.R;
 import com.jiusg.aggregation.common.CallBackMessage;
-import com.jiusg.aggregation.common.CallBackWeiBo;
-import com.jiusg.aggregation.common.LoadBaiDu;
 import com.jiusg.aggregation.common.LoadMessage;
-import com.jiusg.aggregation.common.LoadWeiBo;
-import com.jiusg.aggregation.common.LoadWooYun;
 import com.jiusg.aggregation.domain.Message;
-import com.jiusg.aggregation.domain.WeiBo;
+import com.jiusg.aggregation.utils.ACache;
 
 import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/5/7.
  */
-public class HotFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class InfoSecFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private HotAdapter adapter;
+    private InfoSecAdapter adapter;
 
     private ArrayList<Message> messages;
 
@@ -41,7 +37,9 @@ public class HotFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
     private final int MSG_LOAD_DATA_FINISH = 0;
 
-    private final String TAG = WeiBoFragment.class.getSimpleName();
+    private final String TAG = AndroidFragment.class.getSimpleName();
+
+    private ACache aCache;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +58,22 @@ public class HotFragment extends Fragment implements SwipeRefreshLayout.OnRefres
 
             handler = new HotHandler();
 
-            adapter = new HotAdapter(messages, getActivity());
+            try{
+                messages = (ArrayList<Message>) aCache.getAsObject("InfoSec");
+
+                if(null != messages){
+                    handler.sendEmptyMessage(0);
+                }else {
+                    messages = new ArrayList<>();
+                }
+
+            }catch (Exception e){
+
+            }
+
+            adapter = new InfoSecAdapter(messages, getActivity());
+
+            aCache = ACache.get(getActivity());
 
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
@@ -68,6 +81,7 @@ public class HotFragment extends Fragment implements SwipeRefreshLayout.OnRefres
             swipeRefreshLayout.setOnRefreshListener(this);
 
             handler.sendEmptyMessageDelayed(1,200);
+
         }
         return swipeRefreshLayout;
     }
@@ -76,30 +90,30 @@ public class HotFragment extends Fragment implements SwipeRefreshLayout.OnRefres
         recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.recycler_hot);
     }
 
-    private  void loadDataFromNetWork(final Handler handler,
-                                      final ArrayList<Message> list) {
+    private  void loadDataFromNetWork(final Handler handler) {
 
-        LoadMessage loadMessage = new LoadMessage(getActivity());
-
-        loadMessage.loadMessageInfo(new CallBackMessage() {
+        new LoadMessage(getActivity()).getInfoSecurity(new CallBackMessage() {
             @Override
-            public void done(ArrayList<Message> messages) {
-                list.clear();
-                list.addAll(messages);
+            public void done(ArrayList<Message> list) {
+//                if(list == null)
+//                    return;
+                messages.clear();
+                messages.addAll(list);
+                aCache.put("InfoSec",messages);
                 handler.sendEmptyMessage(MSG_LOAD_DATA_FINISH);
+
             }
 
             @Override
             public void error(Throwable throwable) {
-
+                Toast.makeText(getActivity(),throwable.getMessage()+"",Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     @Override
     public void onRefresh() {
-        loadDataFromNetWork(handler, messages);
+        loadDataFromNetWork(handler);
     }
 
     class HotHandler extends Handler{

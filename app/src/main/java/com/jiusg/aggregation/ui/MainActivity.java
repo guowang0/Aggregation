@@ -1,5 +1,6 @@
 package com.jiusg.aggregation.ui;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
-import com.jiusg.aggregation.Adapter.MainViewPageAdapter;
+import com.jiusg.aggregation.adapter.MainViewPageAdapter;
 import com.jiusg.aggregation.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -55,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ArrayList<Fragment> fragments = new ArrayList<>(2);
 
-        fragments.add(new HotFragment());
-        fragments.add(new WeiBoFragment());
+        fragments.add(new InfoSecFragment());
+        fragments.add(new AndroidFragment());
 
         viewPager.setAdapter(new MainViewPageAdapter(getSupportFragmentManager(), fragments));
         viewPager.setCurrentItem(0);
@@ -66,12 +67,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 switch (position) {
                     case 0:
-                        title.setText("头条");
+                        title.setText("信息安全");
                         hot.setImageResource(R.mipmap.ic_event_press);
                         weiBo.setImageResource(R.mipmap.ic_preview);
                         break;
                     case 1:
-                        title.setText("微博");
+                        title.setText("Android");
                         hot.setImageResource(R.mipmap.ic_event);
                         weiBo.setImageResource(R.mipmap.ic_preview_press);
                         break;
@@ -88,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SettingActivity.class));
             }
         });
     }
@@ -119,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 viewPager.setCurrentItem(1);
                 break;
             case R.id.action_settings:
+
                 break;
             default:
                 break;

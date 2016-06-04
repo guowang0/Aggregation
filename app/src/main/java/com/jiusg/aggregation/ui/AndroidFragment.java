@@ -11,32 +11,35 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.jiusg.aggregation.Adapter.WeiBoAdapter;
+import com.jiusg.aggregation.adapter.InfoSecAdapter;
 import com.jiusg.aggregation.R;
-import com.jiusg.aggregation.common.CallBackWeiBo;
+import com.jiusg.aggregation.common.CallBackMessage;
+import com.jiusg.aggregation.common.LoadMessage;
 import com.jiusg.aggregation.common.LoadWeiBo;
-import com.jiusg.aggregation.domain.WeiBo;
+import com.jiusg.aggregation.utils.ACache;
 
 import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/5/7.
  */
-public class WeiBoFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+public class AndroidFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private WeiBoAdapter adapter;
+    private InfoSecAdapter adapter;
 
-    private ArrayList<String> list;
-    private ArrayList<WeiBo> weiBos;
+    private ArrayList<com.jiusg.aggregation.domain.Message> messages;
 
     private WeiBoHandler handler;
 
+    private ACache aCache = ACache.get(getActivity());
+
     private final int MSG_LOAD_DATA_FINISH = 0;
 
-    private final String TAG = WeiBoFragment.class.getSimpleName();
+    private final String TAG = AndroidFragment.class.getSimpleName();
 
     @Nullable
     @Override
@@ -45,20 +48,30 @@ public class WeiBoFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             swipeRefreshLayout = (SwipeRefreshLayout) inflater.inflate(R.layout.fragment_weibo, container, false);
             initView(swipeRefreshLayout);
 
-
-            list = new ArrayList<>();
-            weiBos = new ArrayList<>();
-
-            addTestData();
+            messages = new ArrayList<>();
 
             handler = new WeiBoHandler();
 
-            adapter = new WeiBoAdapter(weiBos,getActivity());
+            try{
+                messages = (ArrayList<com.jiusg.aggregation.domain.Message>) aCache.getAsObject("Android");
+
+                if(null != messages){
+                    handler.sendEmptyMessage(0);
+                }else {
+                    messages = new ArrayList<>();
+                }
+
+            }catch (Exception e){
+
+            }
+
+            adapter = new InfoSecAdapter(messages,getActivity());
 
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
 
             swipeRefreshLayout.setOnRefreshListener(this);
+
 
             handler.sendEmptyMessageDelayed(1,300);
 
@@ -75,22 +88,25 @@ public class WeiBoFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         recyclerView = (RecyclerView) swipeRefreshLayout.findViewById(R.id.recycler_main);
     }
 
-    private  void loadDataFromNetWork(final Handler handler,ArrayList<String> strings,
-                                      final ArrayList<WeiBo> list){
+    private  void loadDataFromNetWork(final Handler handler){
 
         LoadWeiBo loadWeiBo = new LoadWeiBo(getActivity());
 
-        loadWeiBo.loadWeiBoInfoByUsers(strings, new CallBackWeiBo() {
+        LoadMessage loadMessage = new LoadMessage(getActivity());
+
+        loadMessage.getAndroid(new CallBackMessage() {
             @Override
-            public void done(ArrayList<WeiBo> weiBos) {
-                list.clear();
-                list.addAll(weiBos);
+            public void done(ArrayList<com.jiusg.aggregation.domain.Message> list) {
+
+                messages.clear();
+                messages.addAll(list);
                 handler.sendEmptyMessage(MSG_LOAD_DATA_FINISH);
+                aCache.put("Android",messages);
             }
 
             @Override
             public void error(Throwable throwable) {
-
+                Toast.makeText(getActivity(),throwable.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -98,7 +114,7 @@ public class WeiBoFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
     @Override
     public void onRefresh() {
-        loadDataFromNetWork(handler,list,weiBos);
+        loadDataFromNetWork(handler);
     }
 
 
@@ -121,19 +137,5 @@ public class WeiBoFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             }
         }
     }
-
-    /**
-     * 添加测试数据
-     */
-    private void addTestData(){
-
-        list.add("cnitsec");
-//        list.add("benjurry");
-//        list.add("caoz");
-        list.add("Fenng");
-//        list.add("FlashSky");
-//        list.add("lake2");
-    }
-
 
 }

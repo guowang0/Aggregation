@@ -14,12 +14,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jiusg.aggregation.R;
-import com.jiusg.aggregation.domain.Message;
+import com.jiusg.aggregation.domain.Info;
 import com.jiusg.aggregation.domain.WeiBo;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -29,7 +28,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 public class WebViewActivity extends Activity implements View.OnClickListener{
 
     private WebView webView;
-    private Message message;
+    private Info message;
     private RelativeLayout pb;
     private ImageButton back;
     private TextView title;
@@ -97,7 +96,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener{
         }
 
         try {
-            message = (Message) getIntent().getSerializableExtra("message");
+            message = (Info) getIntent().getSerializableExtra("message");
             title.setText(message.title);
             url = message.url;
         } catch (Exception e) {

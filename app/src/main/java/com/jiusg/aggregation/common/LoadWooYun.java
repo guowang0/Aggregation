@@ -3,8 +3,7 @@ package com.jiusg.aggregation.common;
 import android.content.Context;
 import android.util.Log;
 
-import com.jiusg.aggregation.domain.Message;
-import com.jiusg.aggregation.domain.WeiBo;
+import com.jiusg.aggregation.domain.Info;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -43,11 +42,11 @@ public class LoadWooYun {
     /**
      * 加载乌云网站信息
      */
-    public void loadWooYunInfo(final CallBackMessage callBack){
+    public void loadWooYunInfo(final CallBackInfo callBack){
         Observable
-                .create(new Observable.OnSubscribe<ArrayList<Message>>() {
+                .create(new Observable.OnSubscribe<ArrayList<Info>>() {
                     @Override
-                    public void call(Subscriber<? super ArrayList<Message>> subscriber) {
+                    public void call(Subscriber<? super ArrayList<Info>> subscriber) {
 
                         Document document = null;
                         try {
@@ -60,7 +59,7 @@ public class LoadWooYun {
                             subscriber.onError(e);
                         }
 
-                        ArrayList<Message> messages = getWooYuns(document);
+                        ArrayList<Info> messages = getWooYuns(document);
 
                         if (messages != null && messages.size() > 0) {
                             subscriber.onNext(messages);
@@ -72,7 +71,7 @@ public class LoadWooYun {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(new Observer<ArrayList<Message>>() {
+                .subscribe(new Observer<ArrayList<Info>>() {
                     @Override
                     public void onCompleted() {
 
@@ -85,7 +84,7 @@ public class LoadWooYun {
                     }
 
                     @Override
-                    public void onNext(ArrayList<Message> messages) {
+                    public void onNext(ArrayList<Info> messages) {
                         callBack.done(messages);
                         Log.i(TAG, "WooYun | 已加载完成!");
                     }
@@ -94,15 +93,15 @@ public class LoadWooYun {
     }
 
 
-    public ArrayList<Message> getWooYuns(Document document){
+    public ArrayList<Info> getWooYuns(Document document){
 
         Elements elements = document.getElementsByClass("page-post-item");
 
-        ArrayList<Message> messages = new ArrayList<>();
+        ArrayList<Info> messages = new ArrayList<>();
 
         for (Element element: elements ) {
 
-            Message message = new Message();
+            Info message = new Info();
 
             String html = element.getElementsByTag("a").html();
             message.url = element.getElementsByTag("a").attr("abs:href");
@@ -140,6 +139,7 @@ public class LoadWooYun {
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(str.substring(6, 8)));
         calendar.set(Calendar.MONTH, Integer.parseInt(str.substring(4, 6)) - 1);
         calendar.set(Calendar.YEAR, Integer.parseInt(str.substring(0, 4)));
+        calendar.set(Calendar.HOUR_OF_DAY, 1);
 
         return  calendar;
     }

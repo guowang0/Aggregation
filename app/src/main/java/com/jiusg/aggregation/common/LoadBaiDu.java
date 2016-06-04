@@ -3,7 +3,7 @@ package com.jiusg.aggregation.common;
 import android.content.Context;
 import android.util.Log;
 
-import com.jiusg.aggregation.domain.Message;
+import com.jiusg.aggregation.domain.Info;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -35,23 +35,27 @@ public class LoadBaiDu {
 
     private final String URL = "http://www.baidu.com/s?wd=%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8&pn=0&tn=baidurt&ie=utf-8&rtt=1&bsst=1";
 
+    public static final String URL_ANDROID = "https://www.baidu.com/s?tn=baidurt&rtt=1&bsst=1&wd=android&origin=ps";
+
     public LoadBaiDu(Context context) {
         this.context = context;
     }
 
+
+
     /**
-     * 加载乌云网站信息
+     * 加载百度网站信息
      */
-    public void loadBaiDuInfo(final CallBackMessage callBack){
+    public void loadBaiDuInfo(final String url,final CallBackInfo callBack){
         Observable
-                .create(new Observable.OnSubscribe<ArrayList<Message>>() {
+                .create(new Observable.OnSubscribe<ArrayList<Info>>() {
                     @Override
-                    public void call(Subscriber<? super ArrayList<Message>> subscriber) {
+                    public void call(Subscriber<? super ArrayList<Info>> subscriber) {
 
                         Document document = null;
                         try {
 
-                            Connection connection = Jsoup.connect(URL);
+                            Connection connection = Jsoup.connect(url);
                             connection.request().header("User-Agent", USER_AGENT);
                             document = connection.get();
 
@@ -59,7 +63,7 @@ public class LoadBaiDu {
                             subscriber.onError(e);
                         }
 
-                        ArrayList<Message> messages = getWooYuns(document);
+                        ArrayList<Info> messages = getWooYuns(document);
 
                         if (messages != null && messages.size() > 0) {
                             subscriber.onNext(messages);
@@ -71,7 +75,7 @@ public class LoadBaiDu {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(new Observer<ArrayList<Message>>() {
+                .subscribe(new Observer<ArrayList<Info>>() {
                     @Override
                     public void onCompleted() {
 
@@ -84,7 +88,7 @@ public class LoadBaiDu {
                     }
 
                     @Override
-                    public void onNext(ArrayList<Message> messages) {
+                    public void onNext(ArrayList<Info> messages) {
                         callBack.done(messages);
 //                        Log.i(TAG, user + " | " + weiBos.get(0).userName + " | 已加载完成!");
                     }
@@ -93,15 +97,69 @@ public class LoadBaiDu {
     }
 
 
-    public ArrayList<Message> getWooYuns(Document document){
+    /**
+     * 加载乌云网站信息
+     */
+    public void loadBaiDuInfo(final CallBackInfo callBack){
+        Observable
+                .create(new Observable.OnSubscribe<ArrayList<Info>>() {
+                    @Override
+                    public void call(Subscriber<? super ArrayList<Info>> subscriber) {
+
+                        Document document = null;
+                        try {
+
+                            Connection connection = Jsoup.connect(URL);
+                            connection.request().header("User-Agent", USER_AGENT);
+                            document = connection.get();
+
+                        } catch (IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        ArrayList<Info> messages = getWooYuns(document);
+
+                        if (messages != null && messages.size() > 0) {
+                            subscriber.onNext(messages);
+                        } else {
+                            subscriber.onError(new Error("null"));
+                        }
+
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new Observer<ArrayList<Info>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        callBack.error(throwable);
+                        Log.e(TAG, throwable.toString());
+                    }
+
+                    @Override
+                    public void onNext(ArrayList<Info> messages) {
+                        callBack.done(messages);
+//                        Log.i(TAG, user + " | " + weiBos.get(0).userName + " | 已加载完成!");
+                    }
+                });
+
+    }
+
+
+    public ArrayList<Info> getWooYuns(Document document){
 
         Elements elements = document.getElementsByClass("f");
 
-        ArrayList<Message> messages = new ArrayList<>();
+        ArrayList<Info> messages = new ArrayList<>();
 
         for (Element element: elements ) {
 
-            Message message = new Message();
+            Info message = new Info();
 
             String html = element.getElementsByTag("h3").html();
             String html1 = element.getElementsByTag("font").html();
@@ -132,9 +190,15 @@ public class LoadBaiDu {
     }
 
     private String getSource(String str){
-        int j = str.indexOf("-");
-        String str1 = str.substring(0,j-1);
-        return  str1;
+        try {
+            int j = str.indexOf("-");
+            String str1 = str.substring(0, j - 1);
+
+            return str1;
+        }catch (Exception e){
+
+        }
+        return str;
     }
 
     private String getTime(String str){

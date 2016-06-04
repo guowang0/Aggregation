@@ -1,16 +1,14 @@
 package com.jiusg.aggregation.domain;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
- * Created by Administrator on 2016/5/8.
+ * Created by Administrator on 2016/5/25.
  */
-public class Message implements Serializable {
-    public String timeStr;
-    public Calendar time;
-    public String title;
-    public String content;
-    public String source;
-    public String url;
+public class Message implements Serializable{
+    public int type = -1;
+    public  Info info;
+    public WeiBo weiBo;
+    public static final int INFO = 0;
+    public static final int WEIBO = 1;
 }
